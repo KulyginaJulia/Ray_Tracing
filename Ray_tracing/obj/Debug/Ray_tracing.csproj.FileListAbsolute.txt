@@ -41,3 +41,6 @@ C:\Users\tvc\Desktop\2\Ray_tracing\obj\Debug\Ray_tracing.csprojResolveAssemblyRe
 C:\Users\tvc\Desktop\2\Ray_tracing\obj\Debug\Ray_tracing.Form1.resources
 C:\Users\tvc\Desktop\2\Ray_tracing\obj\Debug\Ray_tracing.Properties.Resources.resources
 C:\Users\tvc\Desktop\2\Ray_tracing\obj\Debug\Ray_tracing.csproj.GenerateResource.Cache
+C:\Users\Julia\Ray_tracing\Ray_tracing\bin\Debug\Ray_tracing.exe.config
+C:\Users\Julia\Ray_tracing\Ray_tracing\obj\Debug\Ray_tracing.exe
+C:\Users\Julia\Ray_tracing\Ray_tracing\obj\Debug\Ray_tracing.pdb

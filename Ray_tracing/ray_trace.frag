@@ -1,14 +1,14 @@
 ﻿#version 330
-//#pragma optionNV(unroll none)
-//#pragma unroll
 #define EPSILON  0.001
 #define BIG  1000000.0
-#define STACK_MAX_SIZE 20
 
 const int DIFFUSE = 1;
-const int REFLECTION = 2;
-const int REFRACTION = 3;
 
+out vec4 FragColor;
+in vec3 glPosition;
+
+const int DIFFUSE_REFLECTION = 1;
+const int MIRROR_REFLECTION = 2;
 
 struct SSphere
 {
@@ -27,8 +27,6 @@ struct SLight
 {
 	vec3 Position;
 };
-out vec4 FragColor;
-in vec3 glPosition;
 
 /*** DATA STRUCTURES ***/
 struct SCamera
@@ -68,48 +66,7 @@ struct SMaterial
 	float RefractionCoef;
 	int MaterialType;
 };
-const int DIFFUSE_REFLECTION = 1;
-const int MIRROR_REFLECTION = 2;
 
-struct STracingRay
-{
-	SRay ray;
-	float contribution;
-	int depth;
-};
-//**Stack of SRay **//
-struct Stack_t {
-    STracingRay data[STACK_MAX_SIZE];
-    int size;
-};
-
-void pushRay(inout Stack_t stack, const STracingRay value) 
-{
-//	if (stack.size >= STACK_MAX_SIZE - 1)
-//		discard;
-//	else 
-//	{
-		stack.data[stack.size] = value;
-		stack.size++;
-//	}
-}
-STracingRay popRay(inout Stack_t stack)
-{
-	//if (stack.size < 0)
-	//	discard;
-	//else 
-	//{
-		stack.size--;
-		return stack.data[stack.size];
-	//}
-}
-bool isEmpty(Stack_t stack)
-{
-	if (stack.size == 0)
-		return true;
-	else 
-		return false;
-}
 void initializeDefaultScene( out STriangle triangles[12],  out SSphere spheres[2])
 {
 	/** TRIANGLES **/
@@ -126,56 +83,56 @@ void initializeDefaultScene( out STriangle triangles[12],  out SSphere spheres[2
 	triangles[2].v1 = vec3(-5.0,-5.0, 5.0);
 	triangles[2].v2 = vec3( 5.0,-5.0, 5.0);
 	triangles[2].v3 = vec3(-5.0, 5.0, 5.0);
-	triangles[2].MaterialIdx = 0;
+	triangles[2].MaterialIdx = 1;
 	triangles[3].v1 = vec3( 5.0, 5.0, 5.0);
 	triangles[3].v2 = vec3(-5.0, 5.0, 5.0);
 	triangles[3].v3 = vec3( 5.0,-5.0, 5.0);
-	triangles[3].MaterialIdx = 0;
+	triangles[3].MaterialIdx = 1;
 	/*right wall */
 	triangles[4].v1 = vec3(5.0, 5.0, 5.0);
 	triangles[4].v2 = vec3(5.0, -5.0, 5.0);
 	triangles[4].v3 = vec3(5.0, 5.0, -5.0);
-	triangles[4].MaterialIdx = 0;
+	triangles[4].MaterialIdx = 2;
 	triangles[5].v1 = vec3(5.0, -5.0, 5.0);
 	triangles[5].v2 = vec3(5.0, 5.0, -5.0);
 	triangles[5].v3 = vec3(5.0, -5.0, -5.0);
-	triangles[5].MaterialIdx = 0;
+	triangles[5].MaterialIdx = 2;
 	/*down wall */
 	triangles[6].v1 = vec3(-5.0,-5.0,-5.0);
 	triangles[6].v2 = vec3(-5.0,-5.0, 5.0);
 	triangles[6].v3 = vec3( 5.0,-5.0, 5.0);
-	triangles[6].MaterialIdx = 5;
+	triangles[6].MaterialIdx = 3;
 	triangles[7].v1 = vec3( 5.0,-5.0, 5.0);
 	triangles[7].v2 = vec3(5.0, -5.0, -5.0);
 	triangles[7].v3 = vec3(-5.0,-5.0,-5.0);
-	triangles[7].MaterialIdx = 0;
+	triangles[7].MaterialIdx = 3;
 	/*up wall */
 	triangles[8].v1 = vec3(-5.0, 5.0, 5.0);
 	triangles[8].v2 = vec3(-5.0, 5.0,-5.0);
 	triangles[8].v3 = vec3( 5.0, 5.0, 5.0);
-	triangles[8].MaterialIdx = 0;
+	triangles[8].MaterialIdx = 4;
 	triangles[9].v1 = vec3(-5.0, 5.0, -5.0);
 	triangles[9].v2 = vec3( 5.0, 5.0, 5.0);
 	triangles[9].v3 = vec3(5.0, 5.0, -5.0);
-	triangles[9].MaterialIdx = 0;
+	triangles[9].MaterialIdx = 4;
 
 	/*front wall*/
 	triangles[10].v1 = vec3(-5.0,-5.0, -5.0);
 	triangles[10].v2 = vec3( 5.0,-5.0, -5.0);
 	triangles[10].v3 = vec3(-5.0, 5.0, -5.0);
-	triangles[10].MaterialIdx = 0;
+	triangles[10].MaterialIdx = 5;
 	triangles[11].v1 = vec3( 5.0, 5.0, -5.0);
 	triangles[11].v2 = vec3(-5.0, 5.0, -5.0);
 	triangles[11].v3 = vec3( 5.0,-5.0, -5.0);
-	triangles[11].MaterialIdx = 0;
+	triangles[11].MaterialIdx = 5;
 	
 	/** SPHERES **/
 	spheres[0].Center = vec3(-1.0,-1.0,-2.0);
 	spheres[0].Radius = 2.0;
-	spheres[0].MaterialIdx = 2;
+	spheres[0].MaterialIdx = 0;
 	spheres[1].Center = vec3(2.0,1.0,2.0);
 	spheres[1].Radius = 1.0;
-	spheres[1].MaterialIdx = 2;
+	spheres[1].MaterialIdx = 0;
 }
 
 SRay GenerateRay ( SCamera uCamera )
@@ -184,6 +141,7 @@ SRay GenerateRay ( SCamera uCamera )
 	vec3 direction = uCamera.View + uCamera.Side * coords.x + uCamera.Up * coords.y;
 	return SRay ( uCamera.Position, normalize(direction) );
 }
+
 SCamera initializeDefaultCamera()
 {
  //** CAMERA **//
@@ -287,8 +245,6 @@ bool Raytrace ( SRay ray, SSphere spheres[2], STriangle triangles[12], SMaterial
 			intersect.MaterialType = MIRROR_REFLECTION;
 			result = true;
 		}
-		
-		
 	}
 	
 	for(int i = 0; i < 12; i++)
@@ -299,6 +255,7 @@ bool Raytrace ( SRay ray, SSphere spheres[2], STriangle triangles[12], SMaterial
 			intersect.Time = test;
 			intersect.Point = ray.Origin + ray.Direction * test;
 			intersect.Normal = normalize(cross(triangle.v1 - triangle.v2, triangle.v3 - triangle.v2));
+			
 			if (i > 5)
 				intersect.Color = vec3(1.0, 0, 0);//vec3(abs(glPosition.xy), 0);
 			else intersect.Color = vec3(0, 1.0, 0);
@@ -380,7 +337,7 @@ float Shadow(SLight currLight, SIntersection intersect, SSphere spheres[2], STri
 	}
 	return shadowing;
 }
-	int raytraceDepth = 20;
+int raytraceDepth = 20;
 void main ( void )
 {
 	float start = 0;
@@ -410,7 +367,7 @@ void main ( void )
 	SIntersection intersect;
 
 	intersect.Point = vec3(0,0,0); intersect.Normal = vec3(0, 0, 0); intersect.Color = vec3(0, 0, 0); intersect.LightCoeffs = vec4(0, 0, 0, 0); intersect.ReflectionCoef = 0.0; intersect.RefractionCoef = 0.0; intersect.MaterialType = DIFFUSE;
-	for (int j = 0; j < raytraceDepth; j++)//сколько раз луч прогоняется по алгоритму
+	for (int j = 0; j < raytraceDepth; j++)
     {	
 		intersect.Time = BIG;
 		start = 0;
@@ -424,7 +381,6 @@ void main ( void )
 			{ 
 				case DIFFUSE_REFLECTION: 
 				{ 
-					//resultColor = vec3(1.0, 0, 0);
 					float shadowing = Shadow(uLight, intersect, spheres, triangles, materials);
 					resultColor += contribution * Phong (uCamera, intersect, uLight, shadowing);
 					j = raytraceDepth - 1;
@@ -446,19 +402,5 @@ void main ( void )
 			}
 		}
 	}
-	
-	
-	
-
-	
-	
-
-/*	float contribution = 1.0;
-	if (Raytrace(ray, spheres, triangles, materials, start, final, intersect)) // Tracing primary ray
-	{
-		float shadowing = Shadow(uLight, intersect, spheres, triangles, materials);
-		resultColor += contribution * Phong (uCamera,  intersect, uLight, shadowing );
-	}
-*/	
 	FragColor = vec4 (resultColor, 1.0);
 }
