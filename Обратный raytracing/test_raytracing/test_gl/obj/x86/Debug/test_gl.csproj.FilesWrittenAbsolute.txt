@@ -1,0 +1,6 @@
+/home/bmz/Documents/c_sharp_projects/test_gtk/test_gl/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/bmz/Documents/c_sharp_projects/test_gtk/test_gl/bin/Debug/OpenTK.dll
+/home/bmz/Documents/c_sharp_projects/test_gtk/test_gl/bin/Debug/test_gl.exe.mdb
+/home/bmz/Documents/c_sharp_projects/test_gtk/test_gl/bin/Debug/test_gl.exe
+/home/bmz/Documents/c_sharp_projects/test_gtk/test_gl/obj/x86/Debug/test_gl.exe
+/home/bmz/Documents/c_sharp_projects/test_gtk/test_gl/obj/x86/Debug/test_gl.exe.mdb

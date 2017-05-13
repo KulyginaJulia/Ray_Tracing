@@ -1,0 +1,16 @@
+F:\test_raytracing\test_gl\obj\x86\Debug\test_gl.exe
+F:\test_raytracing\test_gl\bin\Debug\test_gl.exe
+F:\test_raytracing\test_gl\bin\Debug\test_gl.pdb
+F:\test_raytracing\test_gl\bin\Debug\OpenTK.dll
+F:\test_raytracing\test_gl\bin\Debug\OpenTK.xml
+F:\test_raytracing\test_gl\obj\x86\Debug\test_gl.csprojResolveAssemblyReference.cache
+F:\test_raytracing\test_gl\obj\x86\Debug\test_gl.pdb
+D:\test_raytracing\test_gl\obj\x86\Debug\test_gl.exe
+D:\test_raytracing\test_gl\obj\x86\Debug\test_gl.pdb
+D:\test_raytracing\test_gl\bin\Debug\test_gl.exe
+D:\test_raytracing\test_gl\bin\Debug\test_gl.pdb
+D:\test_raytracing\test_gl\bin\Debug\OpenTK.dll
+D:\test_raytracing\test_gl\bin\Debug\OpenTK.xml
+D:\test_raytracing\test_gl\obj\x86\Debug\test_gl.csprojResolveAssemblyReference.cache
+C:\Users\Julia\Desktop\test_raytracing\test_gl\obj\x86\Debug\test_gl.exe
+C:\Users\Julia\Desktop\test_raytracing\test_gl\obj\x86\Debug\test_gl.pdb
